@@ -34,7 +34,48 @@
 [RxBus](https://github.com/Anadea/RxBus) 는 라이브러리로도 있지만, 직접 짜는 것도 그리 어렵지 않다. 이벤트 버스의 성질을 잘 생각해보면 주의 해야하는 점은, Hot Observable을 활용해서 등록 및 해지를 활용하면 된다.
  각 원하는 이벤트마다 하나의 객체를 만들어서 사용하면 된다. 
 
-####다음은 예제코드이다 
+##RxBus 사용
+
+1.이벤트 정의 :
+
+```
+public  static  class  MessageEvent { / * 필요한 경우 추가 필드 * / }
+```
+
+2.가입자 준비 : 구독 방법 선언 및 주석 달기, 선택적으로 스레드 모드 지정 :
+
+
+```
+@Subscribe ( threadMode  =  ThreadMode . MAIN )  
+ 공공  무효 onMessageEvent ( 된 MessageEvent 이벤트) { / * 무언가 * / };
+ 
+```
+ 
+가입자 등록 및 등록 취소. 예를 들어 Android에서 활동 및 파편은 일반적으로 수명주기에 따라 등록해야합니다.
+
+```
+ @Override 
+ public  void onStart () {
+      super . onStart ();
+     EventBus . 의 getDefault () . 등록 ( this );
+ }
+
+ @Override 
+ public  void onStop () {
+      super . onStop ();
+     EventBus . 의 getDefault () . 등록 취소 ( this );
+ }
+```
+
+3.소식 게시 :
+
+```
+ EventBus . 의 getDefault () . 게시물 ( 새  MessageEvent ());
+```
+
+
+
+####다음은 커스텀으로 만들어 본 예제코드이다 
 ~~이상한 점이 있다면 수정요청을 해라~~
 
 
