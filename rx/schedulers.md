@@ -1,6 +1,11 @@
 ## 다양한 스케줄러
 
-Schedulers 클래스의 팩토리 메서드를 사용해서 스케쥴러를 생성한다. 아래의 테이블은 RxJava에서 제공하는 메서드와 사용 가능한 스케줄러들을 보여준다
+[Schedulers](http://reactivex.io/documentation/scheduler.html) 클래스의 팩토리 메서드를 사용해서 스케쥴러를 생성한다. 아래의 테이블은 RxJava에서 제공하는 메서드와 사용 가능한 스케줄러들을 보여준다
+
+![scheduler](http://reactivex.io/documentation/operators/images/schedulers.png)
+
+이 그림에서 알 수 있듯이 SubscribeOn 연산자는 연산자가 호출되는 연산자 체인의 어느 시점에서든지 Observable이 시작할 스레드를 지정한다. ObserveOn 은 Observable이 해당 연산자가 나타나는 위치 아래 에서 사용할 스레드에 영향을줍니다 . 이러한 이유 때문에 Observable 연산자 체인 중 다양한 지점에서 ObserveOn을 여러 번 호출 하여 특정 연산자가 작동하는 스레드를 변경할 수 있습니다.
+
 
 | 스케줄러 | 용도 |
 |:--------|:--------|
@@ -20,7 +25,7 @@ Schedulers 클래스의 팩토리 메서드를 사용해서 스케쥴러를 생�
 
 | 연산자 | 기본 스케줄러 |
 |:--------|:--------|
-|buffer(..)computation|
+|buffer(..)|computation|
 |delay(delay, unit)|computation|
 |delaySubscription(delay, unit)|computation|
 |interval|computation|
