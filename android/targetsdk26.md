@@ -1,6 +1,6 @@
 ## TargetSdk26(8.0.0)으로 올려야하는 이유
 
-자세한 문서는 [여기](https://android-developers.googleblog.com/2017/12/improving-app-security-and-performance.html)를 참조해주세요!
+자세한 문서는 [여기](https://android-developers.googleblog.com/2017/12/improving-app-security-and-performance.html)를 참조해주세요! (한글문서는 [여기](http://meetup.toast.com/posts/146))
 
 #### 2018 년 말의 타겟 API 수준 26으로 상향 요구 사항
 
