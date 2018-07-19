@@ -51,9 +51,10 @@ Java에는 와일드카드라 불리는 부분이 있습니다. Kotlin에서는 
 먼저 Java의 와일드카드를 살펴보면, 크게 extends와 super로 구분되어 있다. 각각의 의미는 아래와 같다.
 
 T : read/write 모두 가능
+
 ? extends T : read만 가능한 서브타입 와일드카드
+
 ? super T : write만 가능한 슈퍼 타입 와일드카드
-read만 가능한 extends와 write만 가능한 super 2가지가 있다. read/write 모두를 해야 하면 와일드카드가 존재하지 않을 듯
 
 
 #### Wildcard type argument - kotlin
@@ -61,8 +62,11 @@ read만 가능한 extends와 write만 가능한 super 2가지가 있다. read/wr
 kotlin에서는 명시적으로 super/extends 대신 in/out 키워드를 제공하는데, 각각의 정의와 매칭은 아래와 같다.
 
 T : 별도의 Wildcard 정의가 없이 read/write 모두 가능
+
 in T : Java의 ? super T와 같음. input의 약자이며 write 만 가능
+
 out T : Java의 ? extends T와 같음. output의 약자이며 read 만 가능
+
 kotlin에서도 java처럼 테스트하기 위해 generics interface을 아래와 같이 정의하였다.
 
 ```
