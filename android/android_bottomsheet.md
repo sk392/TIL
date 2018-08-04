@@ -81,3 +81,40 @@ BottomSheet높이는 자식뷰의 크기에 따라 변하게 되며 기본적으
 * behavior_peekHeight: 기본적으로 보여질 높이
 
 * behavior_hideable: 사용자의 액션에 의해 완전지 감춰질지 여부
+
+
+
+BottomSheetDialogFragment를 활용한 두 번째 예제
+
+
+```
+public class BottomSheetFragment extends BottomSheetDialogFragment {
+
+    private View contentView;
+    private BottomSheetBehavior mBehavior;
+
+    public static BottomSheetFragment newInstance() {
+        BottomSheetFragment fragment = new BottomSheetFragment();
+
+        return fragment;
+    }
+
+
+		//createView 이전에 불리며, dialog를 생성하므로 여기서 view를 셋해줘야 한다.
+    @Override
+    public void setupDialog(Dialog dialog, int style) {
+        contentView = View.inflate(getContext(), R.layout.fragment_bottom_sheet, null);
+        dialog.setContentView(contentView);
+        mBehavior = BottomSheetBehavior.from((View) contentView.getParent());
+        mBehavior.setSkipCollapsed(true);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (mBehavior != null) {
+            mBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        }
+    }
+}
+```
