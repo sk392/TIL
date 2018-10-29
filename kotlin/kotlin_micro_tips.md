@@ -54,6 +54,15 @@ kotlin을 사용하다보면 비슷비슷한데 구분하기 애매한 것들이
 
 사용 예시 : 함수를 호출한 객체를 인자로 받으므로, 이를 사용하여 다른 메서드를 실행하거나 연산을 수행해야하는 경우 사용
 
+```
+ setOnClickListener{
+	 item.link?.let{
+	 	openLink(link)
+	 }
+ }
+```
+
+
 #### - apply()
 
 정의 : 는 함수를 호출하는 객체를 이어지는 블록의 리시버 로 전달하고, 객체 자체를 반환
@@ -62,6 +71,16 @@ kotlin을 사용하다보면 비슷비슷한데 구분하기 애매한 것들이
 
 사용 예시 : 특정 객체를 생성하면서 함께 호출해야 하는 초기화 코드가 있는 경우 사용할 수 있다. 
 
+
+```
+val textView = findViewById<TextView>(R.id.textView)
+
+textView?.apply{
+	text = "블라블라"
+	setTextColor(R.color.red)
+	}
+```
+
 #### - run()
 
 정의 : 함수는 인자가 없는 익명 함수처럼 동작하는 형태와 객체에서 호출하는 형태 총 두 가지가 있다.
@@ -69,6 +88,11 @@ kotlin을 사용하다보면 비슷비슷한데 구분하기 애매한 것들이
 객체 없이 run() 함수를 사용하면 인자 없는 익명 함수처럼 사용할 수 있다. 이어지는 블럭 내에서 처리할 작업들을 넣어줄 수 있으며, 일반 함수와 마찬가지로 값을 반환하지 않거나 특정 값을 반환할 수도 있다.
 
 사용 예시 : 객체에서 이 함수를 호출하는 경우 객체를 리시버로 전달받으므로, 특정 객체의 메서드나 필드를 연속적으로 호출하거나 값을 할당할 때 사용한다. 주의할 점은 apply랑 비슷하지만, apply는 새로운객체를 생성함과 동시에 연속된 작업을 할 때사용하고 run은 이미 생성된 객체에 연속된 작업을 할 때 필요하다.
+
+```
+
+link?.run { url.isNotBlankOrNull() || androidScheme.isNotBlankOrNull() } == true
+```
 
 #### - with()
 
@@ -80,6 +104,14 @@ run()함수는 with()함수를 좀 더 편리하게 사용하기 위해 let()함
 
 사용 예시 : Non-nullable (Null 이 될수 없는) 수신 객체 이고 결과가 필요하지 않은 경우에만 with 를 사용한다!
 
+```
+ val configuration = Configuration() 
+    with(configuration) {
+        host = "127.0.0.1"
+        port = 9000            
+        isSSL = true
+    }
+```
 
 #### - also()
 
@@ -87,6 +119,15 @@ run()함수는 with()함수를 좀 더 편리하게 사용하기 위해 let()함
 
 사용 예시 : 수신 객체 람다가 전달된 수신 객체를 전혀 사용 하지 않거나 수신 객체의 속성을 변경하지 않고 사용하는 경우 also 를 사용한다. 예를 들면 유효성 검사를 할 때 아주 유용하다!
 
+```
+ extraInfoView.visibility = extraInfoItem.visibility.also {
+                if (it == View.VISIBLE) {
+                    extraInfoView.layoutParams.width = viewSize.imageWidth
+                    extraInfoView.setExtraInfos(extraInfoItem)
+                    applyThemeToExtraInfo(extraInfoView, extraInfoItem)
+                }
+            }
+```
 
 #### 코드로 보는 간단한 정리
 
