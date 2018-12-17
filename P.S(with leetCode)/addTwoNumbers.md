@@ -47,8 +47,7 @@ class Solution {
         if (sum >= 10) {
             isCarry = true
             sum %= 10
-        }
-        print("$sum");
+        } 
         temp?.`val` = sum
 
         currentNode1 = currentNode1?.next
@@ -72,6 +71,8 @@ class Solution {
 ### Description
 
 않이... 열심히 고민해서 와일문 하나에 넣어놨더니; 개오래걸린다... 분하다... 하지만 피곤하다.. 이 분함은 내일의 나에게 넘긴다!
+
+않이;; 프린트가 들어가있었다니! 절헌;
 
 ```
 Runtime: 300 ms, faster than 7.89% of Kotlin online submissions for Add Two Numbers.
