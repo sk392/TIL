@@ -62,6 +62,6 @@ class Solution {
 
 ```
 
-### Description
+### Explanation
 
 약간.. 스택이나 다른 칭구들을 고민해봐쓰나 요칭구가 젤 빨라?보여서 ㅋㅋㅋ 이걸로 해결!

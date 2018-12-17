@@ -52,6 +52,6 @@ class Solution {
 
 ```
 
-### Description
+### Explanation
 
 곱하고 나누는 것보다 요게 빠른 것같아성... 요걸루 했다!
