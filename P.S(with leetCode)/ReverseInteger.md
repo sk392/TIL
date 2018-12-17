@@ -1,7 +1,7 @@
 ### ReverseInteger
 
 
-요번엔 [TwoSum](https://leetcode.com/problems/reverse-integer/)요거를 풀어봐씁니다.
+요번엔 [ReverseInteger](https://leetcode.com/problems/reverse-integer/)요거를 풀어봐씁니다.
 
 ### Problem
 

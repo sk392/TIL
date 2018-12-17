@@ -1,7 +1,7 @@
 ### isPalindrome
 
 
-요번엔 [TwoSum](https://leetcode.com/problems/palindrome-number/)요거를 풀어봐씁니다.
+요번엔 [isPalindrome](https://leetcode.com/problems/palindrome-number/)요거를 풀어봐씁니다.
 
 ### Problem
 
