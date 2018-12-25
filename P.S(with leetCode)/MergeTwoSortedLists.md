@@ -25,37 +25,35 @@ Output: 1->1->2->3->4->4
  */
 class Solution {
     fun mergeTwoLists(l1: ListNode?, l2: ListNode?): ListNode? {
-    if(l1== null && l2 == null){
-        return null
-    }
-        val result = ListNode(0)
-    var tempNode = result
-    var temp1 = l1
-    var temp2 = l2
-    while (temp1 != null || temp2 != null) {
-        if (temp1 == null) {
-            tempNode.`val` = temp2?.`val`!!
-            temp2 = temp2.next
-        } else if (temp2 == null) {
-            tempNode.`val` = temp1.`val`
-            temp1 = temp1.next
+        if (l1 == null && l2 == null) {
+            return null
+        }
+        val result : ListNode?
+        var temp1 = l1
+        var temp2 = l2
+        if (temp1?.`val` ?: Int.MAX_VALUE > temp2?.`val` ?: Int.MAX_VALUE) {
+            result = temp2
+            temp2 = temp2?.next
         } else {
-            if (temp1.`val` > temp2.`val`) {
-                tempNode.`val` = temp2.`val`
-                temp2 = temp2.next
+            result = temp1
+            temp1 = temp1?.next
+        }
+        var tempNode = result
+
+        while (temp1 != null || temp2 != null) {
+
+            if (temp1?.`val` ?: Int.MAX_VALUE > temp2?.`val` ?: Int.MAX_VALUE) {
+                tempNode?.next = temp2
+                temp2 = temp2?.next
             } else {
-                tempNode.`val` = temp1.`val`
-                temp1 = temp1.next
+                tempNode?.next = temp1
+                temp1 = temp1?.next
             }
-        }
-        if(temp1 != null || temp2 != null){
 
-        tempNode.next = ListNode(0)
-        tempNode = tempNode.next!!
+            tempNode = tempNode?.next!!
         }
-    }
 
-    return result
+        return result
     }
 }
 ```
@@ -63,3 +61,7 @@ class Solution {
 ### Explanation
 
 와.. 생각나는데로 풀었더니 이렇게 나오네 ㅋㅋㅋㅋㅋㅋ 개선해봐야게따
+
+--
+
+엄.. 속도는 일단 개선되긴 했고.. 매번 체크하던 if문을 줄였고.. 초기화가 필요해서 코드는 늘었지만.. 먼가 속도를 위한 개선이니까..;; 실코드는 이런식으로 짜면 안되고 읽게 좋게짜자!
