@@ -27,34 +27,14 @@ Output: "10101"
 ```
 class Solution {
     fun addBinary(a: String, b: String): String {
-        val result = StringBuilder()
-        val tempA = a.reversed()
-        val tempB = b.reversed()
-        var plusCount = 0
-        for(i in 0 until  Math.max(a.length,b.length)){
-            var temp= plusCount
-            plusCount =0
-            if( i<a.length){
-                temp += tempA[i].toString().toInt()
-            }
-            if( i<b.length){
-                temp += tempB[i].toString().toInt()
-            }
-            if(temp>=2){
-                plusCount = 1
-                temp -=2
-            }
-            result.append(temp)
-        }
-        if(plusCount!= 0){
-            result.append(plusCount)
-        }
-
-        return result.toString().reversed()
-    }
+     BigInteger(a,2).add(BigInteger(b,2)).toString(2)
+         }
 }
 ```
 
 ### Explanation
 
 앜ㅋㅋㅋㅋㅋㅋㅋㅋㅋ 와.. 정말 하위 0퍼센트라니 대단해!!ㅋㅋㅋㅋㅋㅋㅋ 낼 다시 해봐야지..ㅋㅋㅋ
+
+-----
+ 엥;;; 아니.. 이렇게도 풀 수 있구나... 먼가 현타가...ㅋㅋㅋㅋㅋㅋ 심지어 100퍼센트야;
