@@ -30,7 +30,7 @@ TDD를 먼저하려면 아키텍쳐를 먼저를 적용해야함
 Architecture는 어떤걸 사용하나 상관없지만 Testable해야됨.
 Testable은 응용프로그램의 부분을 분리와 개발을 유지관리할 수 있어야됨.
 
-각 혁할의 인터페이스를 구현해서 테스트는 인터페이스기준으로 동작하는걻 ㅗ장ㄴ하는건가...
+각 혁할의 인터페이스를 구현해서 테스트는 인터페이스기준으로 동작하는걻 권장하는건가...
 
 흠.. 외부에서 주입받아서 해야지 인터페이스를 뷰인터페이스랑 레포지터리 인터페이스
 
@@ -47,7 +47,7 @@ class loginPresenterTest{
 	private lateinit var view : LoginContract.View...
 	
 	inOrder
-	순서정할 수 있음.
+	//순서정할 수 있음.
 }
 
 ```
@@ -164,9 +164,9 @@ activity는 컨트롤러
 
 mvp의 궁극적인 접근법= activity에서 view와 controller의 역할을 최대한 빼앗아 Flow만
 
-mvvm - activitt만 컨텍스트만 의존, viewlogic은 databinding
+mvvm - activity만 컨텍스트만 의존, viewlogic은 databinding
 
-AAC만 지원하는가 = Activity,Fragment의 형태를 꺠뜨리지 않으면서 재사용 생산성 이 높은 아키텍ㅊ펴 구현이 가능하기 떄문(추측잼)
+AAC만 지원하는가 = Activity,Fragment의 형태를 꺠뜨리지 않으면서 재사용 생산성 이 높은 아키텍쳐 구현이 가능하기 떄문(추측잼)
 
 ##### mvp
 
