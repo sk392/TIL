@@ -15,7 +15,12 @@ git cherry-pick master
 
 ```
 //특정 커밋범위를 가져올 때
-git cherry-pick master~4 master~2
+//커밋해쉬 hash1 이후의 커밋부터 hash2까지 가져온당
+
+git cherry-pick [commitHash1]..[commitHash2]
+
+git cherry-pick da7bf655c7b50098cd9b7c6c3c19af43124b736e..85d7bd0dac6f33a677405217fe5824b1bce38de8
+
 ```
 
 자세한 사항은 [Git_Cherry_Pick](https://git-scm.com/docs/git-cherry-pick)문서를 읽어보도록 하자!
