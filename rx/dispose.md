@@ -1,6 +1,7 @@
-## oper - Publish
+## Dispose
 
-[Publish](http://reactivex.io/documentation/operators/publish.html)는 오퍼레이터중 하나로 Observable을 연결 가능한 Observable로 바뀌주는 역할을 한다.
+
+[Dispose](http://reactivex.io/documentation/operators/publish.html)는 오퍼레이터중 하나로 Observable을 연결 가능한 Observable로 바뀌주는 역할을 한다.
 
 ![publish](http://reactivex.io/documentation/operators/images/publishConnect.c.png)
 
