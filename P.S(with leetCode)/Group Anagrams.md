@@ -1,7 +1,7 @@
 ### Group Anagrams
 
 
-Today's Problem Medium-  [Combination Sum](https://leetcode.com/problems/combination-sum/)
+Today's Problem Medium-  [Group Anagrams](https://leetcode.com/problems/group-anagrams/)
 
 ### Problem
 
