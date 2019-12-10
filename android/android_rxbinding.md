@@ -72,7 +72,7 @@ MainActivity.kt
 
 &nbsp;위에서도 설명했듯이 clickListener를 Observable로 대체되어 원하는 rx의 operator를 가져다 쓸 수 있다.
 
-&nbsp;한가지 추가적인 예시를 들자면 화면전환, 결제, 추가 및 삭제요청 등의 작업을 할 때 중복 클릭 방지가 필요한 경우가 있는데, ~~(물론 clickable을 작업에 결과가 오기까지 false를 둔다던가 하는 식으로 처리 해도 된다)~~ 이럴 때 요런식으로 rx Operator의 [debounce](http://reactivex.io/documentation/operators/debounce.html)나 throttleFirst등을 활용해볼 수 있다.
+&nbsp;한가지 추가적인 예시를 들자면 화면전환, 결제, 추가 및 삭제요청 등의 작업을 할 때 중복 클릭 방지가 필요한 경우가 있는데, ~~(물론 clickable을 작업에 결과가 오기까지 false를 둔다던가 하는 식으로 처리 해도 된다)~~ 이럴 때 요런식으로 rx Operator의 [debounce](https://github.com/sk392/TIL/blob/master/rx/Oper%20-%20debounce.md)나 [throttleFirst](https://github.com/sk392/TIL/blob/master/rx/Oper%20-%20ThrottleFirst.md) 등을 활용해볼 수 있다.
 
 * 기능의 한계
 
