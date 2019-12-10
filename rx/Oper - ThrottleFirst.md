@@ -1,4 +1,4 @@
-##Oper - ThrottleFirst
+## Oper - ThrottleFirst
 
 [RxBinding](https://github.com/sk392/TIL/blob/master/android/android_rxbinding.md)에 대한 정리를 하다가 생각난 김에 정리하는 Rx - ThrottleFirst (자매품 [debounce](https://github.com/sk392/TIL/blob/master/rx/Oper%20-%20debounce.md))
 
