@@ -1,9 +1,29 @@
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+/* Create two equal columns that floats next to each other */
+.column {
+  float: left;
+  width: 50%;
+  padding: 10px;
+  height: 300px; /* Should be removed. Only for demonstration */
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+</style>
+
 # Exploring Kotlin’s hidden costs - Part.1
 
 
 Kotlin의 숨겨진 코스트들이 뭐가 있는지 정리해보자 원작자의 글은 [여기](https://medium.com/@BladeCoder/exploring-kotlins-hidden-costs-part-1-fbb9935d9b62) 있다.
-
-
 
 
 
@@ -124,10 +144,260 @@ try {
 }
 ```
  
- 하지만 이 기능에도 몇 가지 조심해야하는 사항이 있습니다.
+ 하지만 이 기능에도 **몇 가지 조심해야하는 사항**이 있습니다.
  
  * inline함수는 자기자신이나 다른 inline함수를 부를 수 없습니다.
  * public으로 선언된 inline함수는 해당 클래스의 public함수나 public필드에만 접근할 수 있습니다.
  * inline으로 구현하면 코드가 직접 들어가기 때문에 절대적인 코드 크기는 커집니다. 그리고 또한 이 inline에 속한 함수가 코드가 긴 함수라면 코드 길이는 더더욱 늘어날 수 있습니다.
 
  
+## Companion objects
+
+kotlin에는 static field나 method가 없어서 대신에 인스턴스와 관련이 없는 field나 method를 companion ojbect안에 선언할 수 있습니다.
+
+* synthetic method - kotlin을 JVM에서 컴파일 하기 위해서 컴파일러가 만드는 method
+
+### Accessing private class field from its companion object
+
+예를 들어 다음과 같은 코드가 있을 때
+
+```
+class MyClass private constructor() {
+	private var hello = 0
+	
+	companion object {
+		fun newInstance() = MyClass()
+	}
+}
+```
+
+위에 코드는 컴파일 될 때 singletone class로 구현되는데, companion object에서 각각의 field나 mothod에 접근할 때마다 getter 와 setter method가 생성된다. 요렇게만 보면 무슨 말인지 이해할 수 없다 ~~(아니면 천재)~~  아래와 같이 코드에 따라 변화되는 kotlin코드와 Decompile된 코드를 정리해봤다.
+
+
+<div class="row">
+  <div class="column" >
+    <h3>Kotlin Code Ver1</h3>
+    
+    class MyClass private constructor() {
+		private var hello = 0
+		
+		companion object {
+			fun newInstance() = MyClass()
+		}
+	}
+
+
+  </div>
+  <div class="column">
+    <h3>Kotlin Code Ver2</h3>
+	
+	class MyClass {
+
+	    private var hello = 0
+	
+	    companion object {
+	        fun newInstance() = MyClass()
+	    }
+	}
+
+
+  </div>
+</div>
+
+
+<div class="row">
+  <div class="column" >
+    <h3>Decompiled Code Ver1</h3>
+
+    
+	public final class MyClass {
+	   private int hello;
+	   public static final MyClass.Companion Companion = new MyClass.Companion((DefaultConstructorMarker)null);
+	
+	   private MyClass() {
+	   }
+	
+	   // $FF: synthetic method
+	   public MyClass(DefaultConstructorMarker $constructor_marker) {
+	      this();
+	   }
+
+	   public static final class Companion {
+	      @NotNull
+	      public final MyClass newInstance() {
+	         return new MyClass((DefaultConstructorMarker)null);
+	      }
+	
+	      private Companion() {
+	      }
+	
+	      // $FF: synthetic method
+	      public Companion(DefaultConstructorMarker $constructor_marker) {
+	         this();
+	      }
+	   }
+	}
+
+  </div>
+  <div class="column">
+    <h3> Decompiled Code Ver2</h3>
+	
+	public final class MyClass {
+	   private int hello;
+	   public static final MyClass.Companion Companion = new MyClass.Companion((DefaultConstructorMarker)null);
+	
+
+	   public static final class Companion {
+	      @NotNull
+	      public final MyClass newInstance() {
+	         return new MyClass();
+	      }
+	
+	      private Companion() {
+	      }
+	
+	      // $FF: synthetic method
+	      public Companion(DefaultConstructorMarker $constructor_marker) {
+	         this();
+	      }
+	   }
+	}
+
+  </div>
+</div>
+
+
+위처럼 ```MyClass private constructor()``` 를제거하고 public으로 전환하면 불필요한 synthetic getter / setter가 생성되지 않는 것을 볼 수 있다.  
+
+
+### Accessing constants decleared in a companion object
+
+Koltin에서는 일반적으로 클래스에서 사용하는 static 상수를 companion object안에 선언하는데 보통 다음과 같이 사용했다고 가정했을 때
+
+```
+class MyClass {
+
+    companion object {
+        private val TAG = "TAG"
+    }
+
+    fun helloWorld() {
+        println(TAG)
+    }
+}
+```
+
+위에서 언급했던 것과 마찬가지로 companion object에 private으로 선언된 상수에 companion object안에 추가적인 synthetic getter가 생성되는 것을 확인할 수 있습니다.
+
+```
+GETSTATIC be/myapplication/MyClass.Companion : Lbe/myapplication/MyClass$Companion;
+INVOKESTATIC be/myapplication/MyClass$Companion.access$getTAG$p (Lbe/myapplication/MyClass$Companion;)Ljava/lang/String;
+ASTORE 1
+```
+
+하지만 synthetic mothed는 실제로 값을 반환하지 않기 때문에 kotlin이 만든 getter method를 부르게 됩니다.
+
+```
+ALOAD 0
+INVOKESPECIAL be/myapplication/MyClass$Companion.getTAG ()Ljava/lang/String;
+ARETURN
+```
+
+상수를 public으로 전환하게 되면 getter method를 직접 호출 할 수 있으므로 synthetic method가 필요 없지만 kotlin은 아직 getter method를 호출해야합니다.
+
+kotlin에선 상수 값을 저장하기 위해서 companion object가 아닌 myclass에 ```private static final```로 상수를 생성하게 됩니다. 하지만 이 상수는 private으로 선언 되어있기 때문에, companion object에서 접근하기 위해서는 synthetic method가 필요하게 됩니다.
+
+```
+INVOKESTATIC be/myapplication/MyClass.access$getTAG$cp ()Ljava/lang/String;
+ARETURN
+```
+
+그리고 syntehtic method는 값을 읽을 수 있게 됩니다.
+
+```
+GETSTATIC be/myapplication/MyClass.TAG : Ljava/lang/String;
+ARETURN
+```
+
+즉, kotlin 클래스에서 companion object의 private 상수를 읽으려면 해당 상수에 접근하지 못하고 다음과 같은 절차를 밟게 됩니다.
+
+* companion object에서 static method를 호출
+* companion object에서 instance method를 호출
+* class에서 static method를 호출
+* static field를 읽고 반환
+
+이 코드를 자바로 전환해보면 다음과 같습니다.
+
+```
+public final class MyClass {
+    private static final String TAG = "TAG";
+    public static final Companion companion = new Companion();
+
+    // synthetic
+    public static final String access$getTAG$cp() {
+        return TAG;
+    }
+
+    public static final class Companion {
+        private final String getTAG() {
+            return MyClass.access$getTAG$cp();
+        }
+
+        // synthetic
+        public static final String access$getTAG$p(Companion c) {
+            return c.getTAG();
+        }
+    }
+
+    public final void helloWorld() {
+        System.out.println(Companion.access$getTAG$p(companion));
+    }
+}
+```
+
+하지만 우리는 이런 불필요한 과정을 제거한 더 간단한 byte code를 얻을수 있습니다.
+
+1. method call을 피하기 위해서 complile-time constant인 ```const```를 사용합니다.
+
+	이렇게 하면 직접적으로 접근할 수 있지만 이것은 primitive type이나 String에서만 사용할 수 있습니다.
+
+```
+class MyClass {
+
+    companion object {
+        private const val TAG = "TAG"
+    }
+
+    fun helloWorld() {
+        println(TAG)
+    }
+}
+```
+
+2. public field에 ```@JvmField``` annotation을 달아주면 getter나 setter를 생성하지 않고 순수 Java 상수처럼 동작하도록 할 수 있습니다. 하지만 이 annotation은 Java호환성을 위해서 만들어졌으므로 Java에서 상수 엑세스를 할 필요가 없는 경우 달아주지 않는 것이 좋습니다. 
+
+	Android에서 예를 들면 ```Parcelable```을 구현하는데 주로 사용될 수 있습니다.
+
+```
+class MyClass() : Parcelable {
+
+    companion object {
+        @JvmField
+        val CREATOR = creator { MyClass(it) }
+    }
+
+    private constructor(parcel: Parcel) : this()
+
+    override fun writeToParcel(dest: Parcel, flags: Int) {}
+
+    override fun describeContents() = 0
+}
+```
+
+3. 마지막으로 ProGaurd 도구를 사용해서 byte code를 최적화를 통해서 chained method들을 병합하는 방법이 있지만 제대로 작동한다는 보장은 없습니다.
+
+> companion object에서 static 상수를 읽으면 Java와 보다 kotlin이 상수 각각에 대해서 2-3 단계의 method가 추가됩니다.
+> 
+> primitive type이나 String을 사용할 땐 반드시 const키워드를 사용해야하고, 다른 유형의 타입은 상수를 반복적으로 엑세스 해야하는 경우 로컬 변수로 값을 캐시하여 회피할 수 있습니다.
+>
+>또 공용 전역 상수를 컴패니언 객체가 아닌 자체 객체의 퍼블릭 글로벌 상수로 선언해두는 것이 좋습니다.
