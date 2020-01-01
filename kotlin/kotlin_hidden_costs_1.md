@@ -25,7 +25,7 @@ Kotlin의 숨겨진 코스트들이 뭐가 있는지 정리해보자 원작자�
  Kotlin은 Java 6/7에서 람다를 지원할 수 있는 아주 좋은 방법입니다. 예를 들어 데이터 베이스 트랜잭션 내에서 임의의 조작을 수행하고 결과를 받는 함수를 예를 들자면 다음과 같은 코드를 작성 할 수 있습니다
  
 
-```
+```kotlin
  fun transaction(db: Database, body: (Database) -> Int): Int {
     db.beginTransaction()
     try {
@@ -40,7 +40,7 @@ Kotlin의 숨겨진 코스트들이 뭐가 있는지 정리해보자 원작자�
  
 사용하는 쪽에서는 Groovy와 유사한 구문을 사용하여 람다식을 마지막 인수로 전달하면서 호출 하면 됩니다
 
-```
+```kotlin
 val deletedRows = transaction(db) {
     it.delete("Customers", null, null)
 }
@@ -52,7 +52,7 @@ java6 JVM에서와 같이 람다식을 지원하지 않는 곳에서는 어떤�
 
  컴파일 후에 람다식의 표현은 아래와 같습니다
  
- ```
+ ```java
  class MyClass$myMethod$1 implements Function1 {
    // $FF: synthetic method
    // $FF: bridge method
@@ -87,7 +87,7 @@ java6 JVM에서와 같이 람다식을 지원하지 않는 곳에서는 어떤�
 
  Function Object를 컴파일할 때 Java8에서는 Boxing과 Unboxing의 오버헤드를 최대한 피하기 위해 [43개의 서로 다른 특수 함수 인터페이스](https://docs.oracle.com/javase/8/docs/api/java/util/function/package-summary.html)가 있는 것에 비해 Kotlin은 하나의 인터페이스만 구현되어 있습니다.
 
-```
+```java
 /** A function that takes 1 argument. */
 public interface Function1<in P1, out R> : Function<R> {
     /** Invokes the function with the specified argument. */
@@ -113,7 +113,7 @@ public interface Function1<in P1, out R> : Function<R> {
 
 이걸로 위의 ```transaction()``` function을 inline으로 변경하면 Java의 표현이 효과적으로 변환됩니다.
 
-```
+```java
 db.beginTransaction();
 try {
    int result$iv = db.delete("Customers", null, null);
@@ -140,7 +140,7 @@ kotlin에는 static field나 method가 없어서 대신에 인스턴스와 관�
 
 예를 들어 다음과 같은 코드가 있을 때
 
-```
+```kotlin
 class MyClass private constructor() {
 	private var hello = 0
 	
@@ -153,98 +153,95 @@ class MyClass private constructor() {
 위에 코드는 컴파일 될 때 singletone class로 구현되는데, companion object에서 각각의 field나 mothod에 접근할 때마다 getter 와 setter method가 생성된다. 요렇게만 보면 무슨 말인지 이해할 수 없다 ~~(아니면 천재)~~  아래와 같이 코드에 따라 변화되는 kotlin코드와 Decompile된 코드를 정리해봤다.
 
 
-<div class="row">
-  <div class="column" >
-    <h3>Kotlin Code Ver1</h3>
-    
-    class MyClass private constructor() {
-		private var hello = 0
-		
-		companion object {
-			fun newInstance() = MyClass()
-		}
+```kotlin
+//example 1
+
+class MyClass private constructor() {
+	private var hello = 0
+	
+	companion object {
+		fun newInstance() = MyClass()
 	}
+}
+
+```
+
+```java
+//example decompile java
 
 
-  </div>
-  <div class="column">
-    <h3>Kotlin Code Ver2</h3>
+public final class MyClass {
+   private int hello;
+   public static final MyClass.Companion Companion = new MyClass.Companion((DefaultConstructorMarker)null);
 	
-	class MyClass {
-
-	    private var hello = 0
+   private MyClass() {
+   }
 	
-	    companion object {
-	        fun newInstance() = MyClass()
-	    }
-	}
+   // $FF: synthetic method
+   public MyClass(DefaultConstructorMarker $constructor_marker) {
+      this();
+   }
 
-
-  </div>
-</div>
-
-
-<div class="row">
-  <div class="column" >
-    <h3>Decompiled Code Ver1</h3>
-
-    
-	public final class MyClass {
-	   private int hello;
-	   public static final MyClass.Companion Companion = new MyClass.Companion((DefaultConstructorMarker)null);
+   public static final class Companion {
+      @NotNull
+      public final MyClass newInstance() {
+         return new MyClass((DefaultConstructorMarker)null);
+      }
 	
-	   private MyClass() {
-	   }
+      private Companion() {
+      }
 	
-	   // $FF: synthetic method
-	   public MyClass(DefaultConstructorMarker $constructor_marker) {
-	      this();
-	   }
+      // $FF: synthetic method
+      public Companion(DefaultConstructorMarker $constructor_marker) {
+         this();
+      }
+   }
+}
 
-	   public static final class Companion {
-	      @NotNull
-	      public final MyClass newInstance() {
-	         return new MyClass((DefaultConstructorMarker)null);
-	      }
-	
-	      private Companion() {
-	      }
-	
-	      // $FF: synthetic method
-	      public Companion(DefaultConstructorMarker $constructor_marker) {
-	         this();
-	      }
-	   }
-	}
 
-  </div>
-  <div class="column">
-    <h3> Decompiled Code Ver2</h3>
+```
+
+```kotlin
+//example 2
 	
-	public final class MyClass {
-	   private int hello;
-	   public static final MyClass.Companion Companion = new MyClass.Companion((DefaultConstructorMarker)null);
+class MyClass {
+	
+    private var hello = 0
+	
+    companion object {
+        fun newInstance() = MyClass()
+    }
+}
+```
+
+
+```java
+//example decompile java
+
+
+public final class MyClass {
+   private int hello;
+   public static final MyClass.Companion Companion = new MyClass.Companion((DefaultConstructorMarker)null);
 	
 
-	   public static final class Companion {
-	      @NotNull
-	      public final MyClass newInstance() {
-	         return new MyClass();
-	      }
+   public static final class Companion {
+      @NotNull
+      public final MyClass newInstance() {
+         return new MyClass();
+      }
 	
-	      private Companion() {
-	      }
+      private Companion() {
+      }
 	
-	      // $FF: synthetic method
-	      public Companion(DefaultConstructorMarker $constructor_marker) {
-	         this();
-	      }
-	   }
-	}
+      // $FF: synthetic method
+      public Companion(DefaultConstructorMarker $constructor_marker) {
+         this();
+      }
+   }
+}
 
-  </div>
-</div>
 
+```
 
 위처럼 ```MyClass private constructor()``` 를제거하고 public으로 전환하면 불필요한 synthetic getter / setter가 생성되지 않는 것을 볼 수 있다.  
 

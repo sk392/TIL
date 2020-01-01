@@ -2,7 +2,7 @@
 # Exploring Kotlin’s hidden costs - Part.3
 
 
-Kotlin의 숨겨진 코스트들이 뭐가 있는지 정리해보자  3탄의 글은 [여기]https://medium.com/@BladeCoder/exploring-kotlins-hidden-costs-part-3-3bf6e0dbf0a4) 있습니다.
+Kotlin의 숨겨진 코스트들이 뭐가 있는지 정리해보자  3탄의 글은 [여기](https://medium.com/@BladeCoder/exploring-kotlins-hidden-costs-part-3-3bf6e0dbf0a4) 있습니다.
 
 
 ## Delegated properties
@@ -359,7 +359,7 @@ for(int var2 = ((Collection)list).size(); i < var2; ++i) {
 이 것을 ```Collection```을 구현하는 배열과 클래스에서 잘 작동하는 것을 볼 수 있고, 따라서 같은 성능을 기대하면서 커스텀 class에서 ```indices``` extention 속성을 사용하고 싶을 수 있습니다.
 
 
-```
+```kotlin
 inline val SparseArray<*>.indices: IntRange
     get() = 0 until size()
 
@@ -372,7 +372,7 @@ fun printValues(map: SparseArray<String>) {
 
 하지만 compile된 후에 코드를 보면 range object에 대해 알아서 피할 수 없기 때문에 효율적이지 않다는 것을 알 수 있습니다.
 
-```
+```java
 public static final void printValues(@NotNull SparseArray map) {
    Intrinsics.checkParameterIsNotNull(map, "map");
    IntRange var10000 = RangesKt.until(0, map.size());
@@ -393,7 +393,7 @@ public static final void printValues(@NotNull SparseArray map) {
 
 대신에 ```until()```을 사용해서 간단히 회피할 수 있습니다.
 
-```
+```kotlin
 fun printValues(map: SparseArray<String>) {
     for (i in 0 until map.size()) {
         println(map.valueAt(i))
