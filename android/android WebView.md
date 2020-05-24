@@ -10,7 +10,7 @@ Android WebView는 브라우저를 제공하는 앱서비스에서 굉장히 중
 Dev나 Beta, Stable에 대한 모든 배포가 작성되며 자주 사용되진 않지만 해당 배포에 대한 Git Log도 확인할 수 있다.
 
 
-### Chrome ReleaseNote
+### Chrome Source
 
 Chrome [GitHub](hhttps://github.com/chromium/chromium/tree/84.0.4135.2)에 들어가면 특정 버전의 코드를 볼 수 있는데, 여긴 아직 미지의 세계이지만 특정 버전의 Feature를 확인할 수 있는 방법은 있다. 특정 버전의 소스코드에 [SupportLibWebViewChromiumFactory.java](android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java)에 들어가면 mWebViewSupportedFeatures에 값을 볼 수 있는데 여기서 지원하는 feature에 대해서 알 수 있다. ~해당 지원되는 feature에 대한 매핑은 아직 잘 모르겠다~
 
