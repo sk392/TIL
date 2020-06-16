@@ -84,18 +84,76 @@ val testJson = """{
 * serializeNulls()
  :  ```adapter.toJson()```호출할 때 null도 직렬화가 됩니다.
 
+### Fails Gracefully
+
+ 일반적으로 Reflection과 달리 Moshi는 일이 잘못 될 때 도움을주기 위해 고안되어 JSON 문서를 읽는 중 오류가 발생하거나 형식이 잘못된 경우 java.io.IOException을 발생시키고, 타입 포맷과 일치하지 않으면 JsonDataException이 발생합니다.
+ 
+### Custom field name
+
+Moshi는 @Json(name = "name")을 활용해서 json에 이름과 변수의 이름을 다르게 설정하고 매핑할 수 있습니다. ```@Json(name = "closed_issues") val closedCount: Long``` 
+
+
+### @JsonQualifier
+
+커스텀 어댑터를 사용할때 같은 타입의 값에 대한 특별한 처리를 하고 싶을 때 @JsonQualifier를 활용하시면 된다. (e.g. color값을 int로 받기)
+
+아래와 같이 colorItem에 다같은 int값인데 다르게 처리하고 싶을 때 CustomAdapter를 만들어서 Moshi빌드할 때 넣어주고 adapter를 빼면 된다. 여기서 헷갈릴 수 있는게 CustomAdapter가 ColorItem에 대한 encoding이나 decoding을 해주는 것이 아니고 하나의 어노테이션에 대해서만 특별하게 처리해준다.
+
+
+```kotlin
+
+
+@JsonClass(generateAdapter = true)
+data class ColorItem(val width : Int, val height : Int, @HexColor val color : Int)
+
+class CustomAdapter{
+    @ToJson
+    fun toJson(@HexColor rgb: Int): String? {
+        return String.format("#%06x", rgb)
+    }
+
+    @FromJson
+    @HexColor
+    fun fromJson(rgb: String): Int {
+        return rgb.substring(1).toInt(16)
+    }
+}
+```
+
+```kotlin
+//사용 예시
+val moshi = Moshi.Builder().add(CustomAdapter()).build()
+val itemAdapter = moshi.adapter(ColorItem::class.java)
+val item = itemAdapter.fromJson(colorJson)
+```
 
 
 ## 기본 사용 법.
 
+kotlin에서의 사용 방법은 크게 2가지로 [Reflection](https://github.com/square/moshi#reflection)을 사용하는 방법과 [Code generation](https://github.com/square/moshi#reflection)을 활용 하는 방법이 있는데, 그 중에 Code Gen방식으로 사용 방법을 알아보자.
 
+1. 우선 Code Gen을 활용하기 위해서 Gradle에 디펜던시를 추가해준다. 
 
+```
+implementation("com.squareup.moshi:moshi:1.9.3") // moshi
+kapt("com.squareup.moshi:moshi-kotlin-codegen:1.9.3") // for code-gen
+```
 
-## 요점
+2. toJson / fromJson을 원하는 클래스에 ```@JsonClass(generateAdapter = true)```를 넣어준다. 작성하지 않으면 기본 reflection인데 관련 디펜던시가 없으면 크래시가 날 것이다.
+
+```kotlin
+
+@JsonClass(generateAdapter = true)
+data class Item(val id: String?, val id2: String?)
+```
+
+3. Moshi를 만들고 특정 값에 대한 원하는 처리를 하고 싶다면 ```@JsonQualifier ``` 를 활용해서 Custom Annotation을 만들고 해당 Adapter를 MoshiBuilder에 직접 넣어준다.
+
+4. 해당 Moshi를 가지고 fromJson , toJson을 활용해서 재밌게 개발한다
+
+## 기타사항 정리
 
 1. Enum엔 @JsonClass(generateAdapter = true)를 사용할 수 없다.
-2. kotlin을 지원한다
-3. Reflection은 런타임에 오버헤드가 있고, 난독화가 어렵다.
-4. Code gen은 빌드 타임에 오버헤드가 있고 난독화할 수 있다.
-5. Enum클래스를 참조하는 경우에는 (json to class) 반드시 대소 문자를 맞춰야 한다.
-
+2. Reflection은 런타임에 오버헤드가 있고, 난독화가 어렵다.
+3. Code gen은 빌드 타임에 오버헤드가 있고 난독화할 수 있다.
+4. Enum클래스를 참조하는 경우에는 (json to class) 반드시 대소 문자를 맞춰야 한다.
