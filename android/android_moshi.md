@@ -54,7 +54,7 @@ https://gist.github.com/swankjesse/61354fd0a20bf56072f6a1d0c82fb9fc
 Moshi에 Adapter에서는 또 편의성을 위한 함수들이 여러가지가 존재하는데 리스트는 아래와 같다.
 
 * nullSafe()
- : Adapter에서 제공해주는 fromJson / toJson에 대한 결과가 null을 허용해준다.
+ : Adapter에서 제공해주는 fromJson / toJson에 대한 결과가 null을 허용해준다. 기본적으로 nullsafe이다.
  ```val item = itemAdapter.nullSafe().toJson(null) // result is null ```
  ```val item = itemAdapter.nullSafe().toJson(null) // result is null ```
  
@@ -126,6 +126,11 @@ val moshi = Moshi.Builder().add(CustomAdapter()).build()
 val itemAdapter = moshi.adapter(ColorItem::class.java)
 val item = itemAdapter.fromJson(colorJson)
 ```
+
+
+### 생략하고 싶은 필드가 있다면 사용해보아요 @transient
+
+특정 모델들은 데이터를 json에 포함시키고 싶지 않은 값들이 있을 수 있습니다 그럴 때 ```@Transient```를 활용한다면 해결할 수 있어요! fromeJson이나 toJson할 때 해당 값을 Skip하게되고 만약 ```@Trasient``` 어노테이션이 달렸음에도 불구하고 Json에 해당 값이 있다면(원랜 toJson할때 스킵되서 없는게 정상) FailOnUnknown로 adapter로 부르면 크래시가 난다. 모델에 데이터를 채워줄 때는 fromJson할때는 기본 값을 얻습니다. 그래서 ```@Trasient```가 달렸다면 반드시 default Value를 선언해줘야한다.
 
 
 ## 기본 사용 법.
