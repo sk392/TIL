@@ -156,9 +156,20 @@ data class Item(val id: String?, val id2: String?)
 
 4. 해당 Moshi를 가지고 fromJson , toJson을 활용해서 재밌게 개발한다
 
+## Migration from Gson (feat. kotlin)
+
+1. Gson은 Json으로 전환할 때 컨스트럭터에 있는 값만 convert해주고, Moshi는 내부에 있는 멤버변수까지 컨버팅해준다.
+2.  1.번에 연장인데, Moshi는 private 멤버변수를 convert해주지 못한다. (code generation)
+3.  var일때 Moshi는 toJson에 들어가며 val일 때는 안들어가는데, gson은 무조건 안들어간다.
+
+
 ## 기타사항 정리
 
 1. Enum엔 @JsonClass(generateAdapter = true)를 사용할 수 없다.
 2. Reflection은 런타임에 오버헤드가 있고, 난독화가 어렵다.
 3. Code gen은 빌드 타임에 오버헤드가 있고 난독화할 수 있다.
 4. Enum클래스를 참조하는 경우에는 (json to class) 반드시 대소 문자를 맞춰야 한다.
+5. Constructor에 있지 않은 변수는 toJson, fromJson에서 유의미하지 않다.
+6.  get(),set() override는 컨버팅하는데 이상이 없다.
+7. val일경우 toJson할 때 사용하지 않는다.
+
