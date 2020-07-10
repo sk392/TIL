@@ -144,7 +144,7 @@ implementation("com.squareup.moshi:moshi:1.9.3") // moshi
 kapt("com.squareup.moshi:moshi-kotlin-codegen:1.9.3") // for code-gen
 ```
 
-2. toJson / fromJson을 원하는 클래스에 ```@JsonClass(generateAdapter = true)```를 넣어준다. 작성하지 않으면 기본 reflection인데 관련 디펜던시가 없으면 크래시가 날 것이다.
+2. toJson / fromJson을 원하는 클래스에 ```@JsonClass(generateAdapter = true)```를 넣어주어 adapter가 제너레이트 되도록 한다. (작성하지 않으면 기본 reflection인데 관련 디펜던시가 없으면 크래시가 날 것이다.)
 
 ```kotlin
 
@@ -152,9 +152,57 @@ kapt("com.squareup.moshi:moshi-kotlin-codegen:1.9.3") // for code-gen
 data class Item(val id: String?, val id2: String?)
 ```
 
-3. Moshi를 만들고 특정 값에 대한 원하는 처리를 하고 싶다면 ```@JsonQualifier ``` 를 활용해서 Custom Annotation을 만들고 해당 Adapter를 MoshiBuilder에 직접 넣어준다.
+3. 특정 파라미터 이름을 다르게 하고 싶을 떈 ```@Json(name = "name")```를 달아서 변경한다 (SerializedName과 같은 기능)
 
-4. 해당 Moshi를 가지고 fromJson , toJson을 활용해서 재밌게 개발한다
+4. Moshi를 만들고 특정 파라미터에 대한 원하는 처리를 하고 싶다면 ```@JsonQualifier ``` 를 활용해서 Custom Annotation을 만들고 해당 Adapter를 MoshiBuilder에 직접 넣어준다.
+
+```kotlin
+//create Moshi
+    private val moshi: Moshi =
+        Moshi.Builder()
+            .build()
+```
+
+5. 특정 클래스에 대한 커스텀 어뎁터가 필요한 경우 Adapter를 만들고 Moshi에 넣어준다.
+
+```
+class CardAdapter {
+    @ToJson
+    fun toJson(card: Card): String {
+        return card.rank + card.suit.name().substring(0, 1)
+    }
+
+    @FromJson
+    fun fromJson(card: String): Card {
+        if (card.length != 2) throw JsonDataException("Unknown card: $card")
+        val rank = card[0]
+        return when (card[1]) {
+            'C' -> javax.smartcardio.Card(rank, Suit.CLUBS)
+            'D' -> javax.smartcardio.Card(rank, Suit.DIAMONDS)
+            'H' -> javax.smartcardio.Card(rank, Suit.HEARTS)
+            'S' -> javax.smartcardio.Card(rank, Suit.SPADES)
+            else -> throw JsonDataException("unknown suit: $card")
+        }
+    }
+}
+
+```
+```kotlin
+//create Moshi
+    private val moshi: Moshi =
+        Moshi.Builder()
+            .add(CardAdapter())
+            .build()
+```
+
+6. retrofit에서 사용하기 위해서 제공해주는 MoshiConverterFactory를 넣어준다
+
+```
+	 Retrofit.Builder()
+            .addConverterFactory(MoshiConverterFactory.create())
+		...
+```
+
 
 ## Migration from Gson (feat. kotlin)
 
@@ -169,7 +217,7 @@ data class Item(val id: String?, val id2: String?)
 9. nullable에 값이 내려오지 않으면 null이다
 10. Moshi를 통해 Retrofit에 Generic을 사용할 경우 결과 타입에서 형태를 정해서 사용하거나 아니면 사용하지 않아야 한다. 런타임중에 알 수 없기 때문
 11.  codeGen타입은 리플렉션이 아니기 때문에 private으로 된 멤버 변수는 사용할 수 없다. @Trasient 어노테이션을 달거나 함수로 빼야하는데, @Trasient어노테이션을 달기 위해선 get() / set()에 대한 오버라이드가 있는 경우 사용할 수 없어서 함수로 대체. 
-12. Generic이 포함된 상속 타입에서는 adapter를 찾아줄 수 없다.
+12. Generic이 포함된 상속 타입에서는 retrofit에서 찾아줄 수 없다 (
 13. JsonObject to Map with @JvmSuppressWildcards
 
 ```kotlin
@@ -198,3 +246,11 @@ fun getApiResult() : Single<B<C>>
 6. get(),set() override는 컨버팅하는데 이상이 없다.
 7. val일경우 toJson할 때 사용하지 않는다.
 8. private val / pirvate set 등다 안된다.
+
+
+
+## 대체 가능한지 고려사항
+
+1. private 변수는 toJson / fromJson을 사용할 수 없음. @Trasient를 달아주면 되는데 결국 json convert는 불가능.
+2. 제네릭 타입 사용 제한 retrofit에서는 
+
