@@ -300,16 +300,114 @@ fragment comparisonFields on Character {
 }
 ```
 
+### Schemas and Types
+
+GraphQL은 어떤 백앤드 프레임워크나 프로그래밍 언어로도 사용하게끔 만들어졌다.
+
+
+#### Type system
+
+GraphQL의 쿼리는 기본적으로 개체에서 필드를 선택하는 식으로 쿼리를 날린다.  때문에 해당 쿼리에서 반환되는 타입의 내용을 할 수 없으면 쿼리를 할 수 없기 때문에, 정확한 정보가 필요한데, 이를 위해 모든 GraphQL 서비스는 해당 서비스에서 쿼리할 수 있는 가능한 데이터 세트를 설명하는 유형 세트를 정의해서 내려주고 이게 스키마다
+
+1. 특정 루트 객체를 선택한다.
+2. 특정 필드를 선택한다.
+3. 2에서 반환된 객체의 필드를 선택한다. 
+
+
+#### Object types and fields
+
+간단한 오브젝트에 대해 정의해보고 해당 설명을 더해보면
+
+```
+type Character {
+  name: String!
+  appearsIn: [Episode!]!
+}
+```
+
+* ```Character```는 GraphQL의 오브젝트 타입이고, 몇가지 필드를 가질 수 있다. 
+* ```name```, ```appearsIn```은 ```Character``` 타입의 필드이다.
+* ```String```은 내장된 스칼라타입이고 하위 쿼리를 가질 수 없다. 
+* ```String!```에서 !은 non-nullable의 의미를 가지고 쿼리할 때 반드시 값이 있어야 하는 필드를 의미한다.
+* ```[Episode!]!```은 ```Episode``` object 리스트라는 의미를 가지고 있고 내부 객체 및 리스트도 non-nullable형태로 볼 수 있어 항상 리스트를 반환할 것을 기대할 수 있다. (empty List는 가능) 
+
+
+#### Arguments
+
+모든 필드는 0개 이상의 arguments를 가질 수 있고 예를 들어 아래와 같이 length 필드를 참고하면
+
+```
+type Starship {
+  id: ID!
+  name: String!
+  length(unit: LengthUnit = METER): Float
+}
+```
+
+모든 arguments는 이름이 지정되어 있고. 위의 경우에는 ```unit```이 지정되어 있다. arguments는 필수이거나 옵셔널할 수 있는데, 옵셔널인 경우는 위와 같이 default-value로 ```METER```를 지정할 수 있다. 
+
+#### The Query and Mutation types
+
+```
+schema {
+  query: Query
+  mutation: Mutation
+}
+```
+모든 GraphQL은 Query 타입은 존재하고 Mutation 타입은 가질 수도, 가지지 않을 수 있습니다. 이런 타입은 일반 객체와 동일하지만 모든 GraphQL 쿼리의 진입점을 정의하기 때문에 특별하다.
+
+```
+query {
+  hero {
+    name
+  }
+  droid(id: "2000") {
+    name
+  }
+}
+```
+
+위의 쿼리를 하기 위해서는 아래와 같이 ```hero```, ```droid```타입을 ```Query``` 타입이 가지고 있어야 한다.
+
+```
+type Query {
+  hero(episode: Episode): Character
+  droid(id: ID!): Droid
+}
+```
+
+Mutations도 비슷하게 동작하며 스키마에 대한 진입지점이라는 특별한 상태를 제외하면 다른 객체와 동일하다.
+
 
 ### 기타 특징
 
+#### 장점
+
 * gql은 특정 데이터베이스나 플렛폼은 물론, 네트워크 방식에도 종속적이지 않다. L7 HTTP POST와 웹소켓 프로토콜을 활용하지만 필요에 따라서 L4의 TCP/UDP나 L2방식의 이더넷 프레임을 활용할 수 있다.
+* GraphQL 스키마는 GraphQL 애플리케이션에 신뢰할 수 있는 단일 소스를 하나 설정합니다. 조직은 이를 통해 전체 API에 페더레이션할 수 있게 됩니다.
+* GraphQL 호출은 단일 왕복으로 처리되며 클라이언트는 오버페칭 없이 요청한 결과만 얻습니다.
+엄격하게 정의된 데이터 유형은 클라이언트와 서버 간 통신 오류를 줄여줍니다. 
+* GraphQL은 세부 검사를 수행합니다. 클라이언트는 사용 가능한 데이터 유형 목록을 요청할 수 있습니다. 자동 생성 문서의 경우 이상적인 방식이죠.
+* GraphQL은 애플리케이션 API가 기존 쿼리를 중단하지 않고도 진화할 수 있도록 허용합니다.
+REST API로 사용할 수 없는 기능을 제공하기 위해 대부분의 오픈소스 GraphQL 확장 기능을 사용할 수 있습니다.
+* GraphQL은 특정 애플리케이션 아키텍처를 지정하지 않으므로 기존 REST API에 추가하여 기존 API 관리 툴과 연동할 수 있습니다.
+
+#### 단점
+
+* REST API에 친숙한 개발자의 경우 GraphQL를 학습하는 데 시간이 필요합니다..
+* GraphQL은 데이터 쿼리의 상당 작업을 서버측으로 옮겨 서버 개발자 작업의 복잡성이 커집니다.
+* 구현 방식에 따라 GraphQL은 REST API가 아닌 다른 API 관리 전략을 필요로 할 수 있습니다. 이는 특히 비용 제한과 가격을 고려하는 경우 특히 그렇습니다.
+* 캐싱이 REST보다 훨씬 복잡합니다.
+* API 유지관리자의 경우 유지 관리 가능한 GraphQL 스키마를 작성하기 위한 추가 태스크를 수행해야 합니다.
 
 
 > #### 출처
 
 * [GraphQL 개념잡기](https://tech.kakao.com/2019/08/01/graphql-basic/)
+* [GraphQL이란 무엇인가요?](https://www.redhat.com/ko/topics/api/what-is-graphql)
 * [GraphQL learn](https://graphql.org/learn/)
 * [GraphQL Queries and Mutations](https://graphql.org/learn/queries/)
+* [GraphQL Schemas and Types](https://graphql.org/learn/schema/)
 * [GraphQL spec](https://github.com/graphql/graphql-spec)
+* [ApolloGraphQL Schema basics](https://www.apollographql.com/docs/apollo-server/schema/schema)
 
