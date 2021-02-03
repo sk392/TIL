@@ -161,6 +161,11 @@ device = 0
    
 이렇게 모르는 메시지는 현재 어떤걸 출력하고 있는지 까지 확인할 수 있다.
 
+
+### 유용한 한줄
+
+* adb shell dumpsys activity top | grep -E 'Fragment|Activity'  > test.txt : 간단하게 Fragment와 Activity의 하이라키만 보고싶을 때 사용하기;.
+
 ## 결론..?
 
 dumpsys는 주로 View Hierarchy를 확인하기 위해서 자주썼었는데, 최근엔 Tools에 LayoutInspector를 활용하면 볼 수 있기 때문에 (가끔 안되지만) 자주 사용할 일이 없지만, 대체 무슨 일인지 모르겠을 때 도움이 된다.
