@@ -161,6 +161,13 @@ device = 0
    
 이렇게 모르는 메시지는 현재 어떤걸 출력하고 있는지 까지 확인할 수 있다.
 
+### View Hierarchy Descrption
+
+![](./images/dumpsys_viewhierarchy.png)
+
+
+
+
 
 ### 유용한 한줄
 
